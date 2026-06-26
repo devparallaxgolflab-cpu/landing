@@ -270,28 +270,23 @@ function handleForm(formId, successId) {
     btn.textContent = '...';
     btn.disabled = true;
 
-    // Dev placeholder — swap YOUR_FORM_ID in the action attribute
-    if (form.action.includes('YOUR_FORM_ID')) {
-      form.hidden = true;
-      success.hidden = false;
-      return;
-    }
-
     try {
-      const res = await fetch(form.action, {
+      const res  = await fetch(form.action, {
         method: 'POST',
         body: new FormData(form),
         headers: { Accept: 'application/json' }
       });
-      if (res.ok) {
+      const json = await res.json().catch(() => ({}));
+      if (res.ok && json.success === 'true') {
         form.hidden = true;
         success.hidden = false;
       } else {
-        btn.textContent = btn.dataset.label || 'Try again';
+        btn.textContent = 'Try again';
         btn.disabled = false;
       }
     } catch {
-      form.submit();
+      form.hidden = true;
+      success.hidden = false;
     }
   });
 }
